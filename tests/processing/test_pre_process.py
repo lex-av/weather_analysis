@@ -14,7 +14,7 @@ def get_path():
 
 def test_df_generator_read_csv(get_path):
     new_gen = df_generator(get_path + "/tests/test_data/hotels_test_data.zip")
-    assert list(next(new_gen).columns) == ["Id", "Name", "Country", "City", "Latitude", "Longitude"]
+    assert list(next(new_gen).columns) == ["Name", "Country", "City", "Latitude", "Longitude"]
 
 
 def test_df_generator_read_all(get_path):

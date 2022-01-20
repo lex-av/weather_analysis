@@ -20,7 +20,8 @@ def df_generator(path: str) -> Iterator:
 
     for table in tables:
         with zip_src.open(table) as file_csv:
-            yield pd.read_csv(file_csv)
+            # Skip Id from csv
+            yield pd.read_csv(file_csv, usecols=["Name", "Country", "City", "Latitude", "Longitude"])
 
 
 def df_cleaner(df: pd.DataFrame) -> pd.DataFrame:
@@ -49,7 +50,12 @@ def df_cleaner(df: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
     new_gen = df_generator(r"C:\Storage\Coding\EPAM_Traininng\weather_analysis\data\hotels.zip")
-    next(new_gen)
-    df = next(new_gen)
-    df_2 = df_cleaner(df)
+
+    df_1 = df_cleaner(next(new_gen))
+    df_2 = df_cleaner(next(new_gen))
+    df_3 = df_cleaner(next(new_gen))
+    df_4 = df_cleaner(next(new_gen))
+
+    df_complete = pd.concat([df_1, df_2, df_3, df_4])
+
     print()
