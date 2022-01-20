@@ -20,17 +20,36 @@ def df_generator(path: str) -> Iterator:
 
     for table in tables:
         with zip_src.open(table) as file_csv:
-            df = pd.read_csv(file_csv)
+            yield pd.read_csv(file_csv)
 
-            # Using to_numeric to replace to NaN all invalid values
-            df.Latitude = pd.to_numeric(df.Latitude, errors="coerce")
-            df.Longitude = pd.to_numeric(df.Longitude, errors="coerce")
-            df.dropna(inplace=True)
-            yield df
+
+def df_cleaner(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Cleaner to drop invalid rows from hotels DataFrames
+    Can detect wrong latitude/longitude values
+    Does not work inplace
+
+    :param new_df: Pandas dataframe to clear
+    :return: Cleared DataFrame
+    """
+
+    new_df = df.copy()
+
+    # Drop rows, containing values like "abd176.2"
+    new_df.Latitude = pd.to_numeric(new_df.Latitude, errors="coerce")
+    new_df.Longitude = pd.to_numeric(new_df.Longitude, errors="coerce")
+    new_df.dropna(inplace=True)
+
+    # Drop invalid values of Longitude and Latitude
+    new_df.drop(new_df[(new_df.Latitude > 90.0) | (new_df.Latitude < -90.0)].index, inplace=True)
+    new_df.drop(new_df[(new_df.Longitude > 180.0) | (new_df.Longitude < -180.0)].index, inplace=True)
+
+    return new_df
 
 
 if __name__ == "__main__":
     new_gen = df_generator(r"C:\Storage\Coding\EPAM_Traininng\weather_analysis\data\hotels.zip")
     next(new_gen)
     df = next(new_gen)
+    df_2 = df_cleaner(df)
     print()

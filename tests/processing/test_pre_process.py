@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from src.processing.pre_process import df_generator
+from src.processing.pre_process import df_cleaner, df_generator
 
 
 @pytest.fixture()
@@ -25,8 +25,8 @@ def test_df_generator_read_all(get_path):
         next(new_gen)
 
 
-def test_df_generator_clear_csv(get_path):
+def test_df_cleaner(get_path):
     new_gen = df_generator(get_path + "/tests/test_data/hotels_test_data.zip")
     next(new_gen)  # Skip first file in archive
-    df_with_nan = next(new_gen)
-    assert df_with_nan.City.count() == 1
+    df_clear = df_cleaner(next(new_gen))
+    assert df_clear.City.count() == 1
