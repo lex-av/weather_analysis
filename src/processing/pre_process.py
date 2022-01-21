@@ -85,8 +85,4 @@ def df_group_and_filter(iterable: Union[List[pd.DataFrame], Iterator]) -> pd.Dat
 
 
 if __name__ == "__main__":
-    new_gen = df_generator(r"C:\Storage\Coding\EPAM_Traininng\weather_analysis\data\hotels.zip")
-
-    df_filtered = df_group_and_filter([df_cleaner(df) for df in new_gen])
-
-    print()
+    pass
