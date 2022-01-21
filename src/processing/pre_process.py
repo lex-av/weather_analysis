@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from typing import Iterator
+from typing import Iterator, List, Union
 from zipfile import ZipFile
 
 import pandas as pd
@@ -30,7 +30,7 @@ def df_cleaner(df: pd.DataFrame) -> pd.DataFrame:
     Can detect wrong latitude/longitude values
     Does not work inplace
 
-    :param new_df: Pandas dataframe to clear
+    :param df: Pandas dataframe to clear
     :return: Cleared DataFrame
     """
 
@@ -48,14 +48,45 @@ def df_cleaner(df: pd.DataFrame) -> pd.DataFrame:
     return new_df
 
 
+def df_group_and_filter(iterable: Union[List[pd.DataFrame], Iterator]) -> pd.DataFrame:
+    """
+    Concatenates smaller DataFrames into one bigger and
+    groups it - for every country pick city
+    with the most hotels and drop others
+
+    :param iterable: List of DataFrames or Generator/Iterator of DataFrames
+    :return: filtered concatenated DataFrame
+    """
+
+    # Ignoring index is important. Unexpected filtering otherwise
+    df_complete = pd.concat(iterable, sort=False, ignore_index=True)
+
+    # Prepare auxiliary data
+    country_list = df_complete["Country"].unique()
+    country_city_mapping = {}
+    country_city_df = df_complete[["Country", "City"]]
+
+    # Find and map best cities to their countries
+    for country in country_list:
+        this_country_cities = country_city_df[country_city_df["Country"] == country]
+        best_city = (
+            this_country_cities.groupby("City", sort=False)["Country"].count().sort_values(ascending=False).index[0]
+        )
+
+        country_city_mapping[country] = best_city
+
+    # Drop all, except best cities
+    for map_country, map_city in country_city_mapping.items():
+        df_complete.drop(
+            df_complete[(df_complete.Country == map_country) & (df_complete.City != map_city)].index, inplace=True
+        )
+
+    return df_complete
+
+
 if __name__ == "__main__":
     new_gen = df_generator(r"C:\Storage\Coding\EPAM_Traininng\weather_analysis\data\hotels.zip")
 
-    df_1 = df_cleaner(next(new_gen))
-    df_2 = df_cleaner(next(new_gen))
-    df_3 = df_cleaner(next(new_gen))
-    df_4 = df_cleaner(next(new_gen))
-
-    df_complete = pd.concat([df_1, df_2, df_3, df_4])
+    df_filtered = df_group_and_filter([df_cleaner(df) for df in new_gen])
 
     print()
