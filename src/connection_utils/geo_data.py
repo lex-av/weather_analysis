@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
     df_lat_lon = df_cleared[["Latitude", "Longitude"]]
 
-    addr_lst = collect_geo_data(df_lat_lon, max_index=15)
+    addr_lst = collect_geo_data(df_lat_lon, max_index=2)
 
     print()
     print()

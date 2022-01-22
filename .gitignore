@@ -136,4 +136,4 @@ dmypy.json
 *.sqlite
 
 # Cached info
-cache/**
+src/cache/
