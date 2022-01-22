@@ -134,3 +134,6 @@ dmypy.json
 # DB files
 *.db
 *.sqlite
+
+# Cached info
+src/cache/
