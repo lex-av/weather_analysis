@@ -56,12 +56,8 @@ def collect_geo_data(coordinates: pd.DataFrame, max_index: int = None) -> List:
 
 if __name__ == "__main__":
     gen = df_generator("C:/Storage/Coding/EPAM_Traininng/weather_analysis/data/hotels.zip")
-
     df_cleared = df_group_and_filter([df_cleaner(df) for df in gen])
-
     df_lat_lon = df_cleared[["Latitude", "Longitude"]]
+    addr_lst = collect_geo_data(df_lat_lon)
 
-    addr_lst = collect_geo_data(df_lat_lon, max_index=2)
-
-    print()
     print()
