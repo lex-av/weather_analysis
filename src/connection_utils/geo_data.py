@@ -21,7 +21,7 @@ def get_address_worker(coordinate: str) -> Union[str, None]:
     Caching results is highly recommended due to API limitations
 
     :param coordinate: Concatenated Latitude and Longitude. example: "45.7865, -56.9483"
-    :return: Geographical adress for given coordinates or None in case of API errors
+    :return: Geographical address for given coordinates or None in case of API errors
     """
 
     geocoder = Nominatim(user_agent="weather_hotels_1206")
