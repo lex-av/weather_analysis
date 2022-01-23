@@ -9,7 +9,6 @@ from geopy.extra.rate_limiter import RateLimiter
 from geopy.geocoders import Nominatim
 from joblib import Memory
 
-from src.processing.pre_process import df_cleaner, df_generator, df_group_and_filter
 from src.service_utils import project_root
 
 memory = Memory(project_root() / "src" / "cache")
@@ -54,8 +53,22 @@ def collect_geo_data(coordinates: pd.DataFrame, max_index: int = None) -> List:
     return address_list
 
 
-if __name__ == "__main__":
-    gen = df_generator("C:/Storage/Coding/EPAM_Traininng/weather_analysis/data/hotels.zip")
-    df_cleared = df_group_and_filter([df_cleaner(df) for df in gen])
+def calc_centre(coordinates: pd.DataFrame) -> List[float]:
+    """
+    Finds the centre of given DataFrame of coordinates.
+    Treats given coordinates as planar and calculates average
+    of them. That's why given coordinates should be from one
+    city
 
-    print()
+    :param coordinates: pandas DataFrame[["Latitude", "Longitude"]], containing data for one city
+    :return: calculated centre coordinates
+    """
+
+    latitude_values = list(coordinates["Latitude"].values)
+    longitude_values = list(coordinates["Longitude"].values)
+
+    return [sum(latitude_values) / len(latitude_values), sum(longitude_values) / len(longitude_values)]
+
+
+if __name__ == "__main__":
+    pass
