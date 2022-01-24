@@ -82,9 +82,11 @@ def get_city_centre_current_forecast_weather(latitude: float, longitude: float, 
     return pd.DataFrame.from_dict(center_weather_dict)
 
 
-def get_city_centre_historical_weather(latitude: float, longitude: float, city_name: str) -> List:
+def get_city_centre_historical_weather(latitude: float, longitude: float, city_name: str) -> pd.DataFrame:
     """
-    Gets weather historical data for five days from API in parallel
+    Gets weather historical data for five days from API in parallel and
+    packs it into pandas DataFrame.
+    Has high effect on API load - 5 request per City
 
     :param latitude: city_centre latitude
     :param longitude: city_centre longitude
@@ -96,8 +98,7 @@ def get_city_centre_historical_weather(latitude: float, longitude: float, city_n
     # Converting datetime to utc timestamp
     current_time = datetime.datetime.now(datetime.timezone.utc)
     dt_to_request = [current_time - datetime.timedelta(t) for t in range(1, 6)]
-    utc_dt_to_request = [dt.replace(tzinfo=datetime.timezone.utc) for dt in dt_to_request]
-    timestamps_to_request = [int(utc_time.timestamp()) for utc_time in utc_dt_to_request]
+    timestamps_to_request = [int(utc_time.timestamp()) for utc_time in dt_to_request]
 
     # Five requests for five days data
     threads_count = len(timestamps_to_request)
@@ -117,7 +118,27 @@ def get_city_centre_historical_weather(latitude: float, longitude: float, city_n
     for data in weather_data:
         data["City"] = city_name
 
-    return weather_data
+    date = [datetime.datetime.fromtimestamp(weather_data[i]["current"]["dt"]).date() for i in range(len(weather_data))]
+    city = weather_data[0]["City"]
+    latitude = weather_data[0]["lat"]
+    longitude = weather_data[0]["lon"]
+    current_temp_lst = [data["current"]["temp"] for data in weather_data]
+    hourly_data = [data["hourly"] for data in weather_data]
+
+    min_temp_values = [min([hour["temp"] for hour in hourly_data[i]]) for i in range(len(hourly_data))]
+    max_temp_values = [max([hour["temp"] for hour in hourly_data[i]]) for i in range(len(hourly_data))]
+
+    center_weather_dict = {
+        "Date": date,
+        "City": city,
+        "Latitude": latitude,
+        "Longitude": longitude,
+        "DayTemp": current_temp_lst,
+        "MinTemp": min_temp_values,
+        "MaxTemp": max_temp_values,
+    }
+
+    return pd.DataFrame.from_dict(center_weather_dict)
 
 
 def build_historical_weather_data_df(w_data: List) -> pd.DataFrame:

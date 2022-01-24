@@ -2,7 +2,7 @@
 import pandas as pd
 
 from src.connection_utils.weather_api import (
-    build_historical_weather_data_df,
+    get_city_centre_current_forecast_weather,
     get_city_centre_historical_weather,
 )
 from src.processing.post_process import generate_centres_df
@@ -24,11 +24,9 @@ def main():
 
     weather1 = get_city_centre_historical_weather(lats[0], lons[0], cities[0])
     weather2 = get_city_centre_historical_weather(lats[1], lons[1], cities[1])
+    weather3 = get_city_centre_current_forecast_weather(lats[1], lons[1], cities[1])
 
-    wdf1 = build_historical_weather_data_df(weather1)
-    wdf2 = build_historical_weather_data_df(weather2)
-
-    new_wdf = pd.concat([wdf1, wdf2])
+    new_wdf = pd.concat([weather1, weather2, weather3])
 
     return new_wdf
 
