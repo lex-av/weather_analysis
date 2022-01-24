@@ -21,14 +21,16 @@ def weather_api_worker(lat: float, lon: float) -> dict:
     :return: Dictionary of json data
     """
 
-    resp = requests.get(f"https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&appid={WEATHER_API_KEY}")
+    resp = requests.get(
+        f"https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&appid={WEATHER_API_KEY}&units=metric"
+    )
 
     return json.loads(resp.text)
 
 
 def weather_api_historical_worker(lat: float, lon: float, utc_time: int) -> dict:
     """
-    Gets weather data for given coordinate and datetime from openweathermap.org
+    Gets historical weather data for given coordinate and datetime from openweathermap.org
     API key is constants.py required
 
     :param lat: Latitude
@@ -47,10 +49,37 @@ def weather_api_historical_worker(lat: float, lon: float, utc_time: int) -> dict
     return json.loads(resp.text)
 
 
-def get_city_centre_current_forecast_weather():
-    """"""
+def get_city_centre_current_forecast_weather(latitude: float, longitude: float, city_name: str) -> pd.DataFrame:
+    """
+    Gathers weather information for given city coordinates from openweathermap.org API
+    and packs it into pandas DataFrame. Has low effect on API load - only one request per City
 
-    return
+
+    :param latitude: city_centre latitude
+    :param longitude: city_centre longitude
+    :param city_name: marker for DataFrame
+    :return: pandas DataFrame of weather info for current city
+    """
+
+    weather_data = weather_api_worker(latitude, longitude)
+    daily_data = weather_data["daily"][:6]  # Need today's complete info and only 5-day forecast
+
+    dates = [datetime.datetime.fromtimestamp(day["dt"]).date() for day in daily_data]
+    temp_values = [day["temp"]["day"] for day in daily_data]
+    min_temp_values = [day["temp"]["min"] for day in daily_data]
+    max_temp_values = [day["temp"]["max"] for day in daily_data]
+
+    center_weather_dict = {
+        "Date": dates,
+        "City": [city_name for i in range(len(dates))],
+        "Latitude": latitude,
+        "Longitude": longitude,
+        "DayTemp": temp_values,
+        "MinTemp": min_temp_values,
+        "MaxTemp": max_temp_values,
+    }
+
+    return pd.DataFrame.from_dict(center_weather_dict)
 
 
 def get_city_centre_historical_weather(latitude: float, longitude: float, city_name: str) -> List:
@@ -91,12 +120,6 @@ def get_city_centre_historical_weather(latitude: float, longitude: float, city_n
     return weather_data
 
 
-def build_current_forecast_weather_data_df():
-    """"""
-
-    return
-
-
 def build_historical_weather_data_df(w_data: List) -> pd.DataFrame:
     """
     Collects useful data from API-responses and puts it
@@ -132,4 +155,8 @@ def build_historical_weather_data_df(w_data: List) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
+
+    wth_data = get_city_centre_current_forecast_weather(30.489772, -99.771335, "Londo")
+
+    print()
     pass
