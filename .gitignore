@@ -137,3 +137,6 @@ dmypy.json
 
 # Cached info
 src/cache/
+
+# Keys
+src/connection_utils/constants.py
