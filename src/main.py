@@ -6,7 +6,7 @@ from src.api_utils.weather_api import (
     get_centre_current_forecast_weather,
     get_centre_historical_weather,
 )
-from src.processing.post_process import generate_centres_df
+from src.processing.post_process import generate_centres_df, generate_top_df
 from src.processing.pre_process import df_cleaner, df_generator, df_group_and_filter
 from src.save_results.plotters import plot_max, plot_min
 from src.service_utils import project_root
@@ -35,7 +35,9 @@ def main():
     plot_min(s_complete_weather_df, "Paris")
     plot_max(s_complete_weather_df, "Paris")
 
-    return s_complete_weather_df
+    top_df = generate_top_df(s_complete_weather_df)
+
+    return s_complete_weather_df, top_df
 
 
 if __name__ == "__main__":
