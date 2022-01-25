@@ -21,15 +21,23 @@ def main():
     lats = centre_info["Latitude"].values
     lons = centre_info["Latitude"].values
     cities = centre_info["City"].values
+    weather_dfs = []
 
-    weather1 = get_city_centre_historical_weather(lats[0], lons[0], cities[0])
-    weather2 = get_city_centre_historical_weather(lats[1], lons[1], cities[1])
-    weather3 = get_city_centre_current_forecast_weather(lats[1], lons[1], cities[1])
+    for lat, lon, city in zip(lats, lons, cities):
+        weather_dfs.append(get_city_centre_historical_weather(lat, lon, city))
+        weather_dfs.append(get_city_centre_current_forecast_weather(lat, lon, city))
 
-    new_wdf = pd.concat([weather1, weather2, weather3])
+    complete_weather_df = pd.concat(weather_dfs, ignore_index=True)
+    s_complete_weather_df = complete_weather_df.sort_values("Date")
 
-    return new_wdf
+    return s_complete_weather_df
 
 
 if __name__ == "__main__":
     main()
+
+"""plt.plot(s_complete_weather_df[s_complete_weather_df["City"] == "Paris"]["Date"],
+s_complete_weather_df[s_complete_weather_df["City"] == "Paris"]["DayTemp"])"""
+
+"""plt.plot(s_complete_weather_df[s_complete_weather_df["City"] == "London"]["Date"],
+s_complete_weather_df[s_complete_weather_df["City"] == "London"]["DayTemp"])"""
