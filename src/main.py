@@ -7,8 +7,16 @@ from src.api_utils.weather_api import (
     get_centre_historical_weather,
 )
 from src.processing.post_process import generate_centres_df, generate_top_df
-from src.processing.pre_process import df_cleaner, df_generator, df_group_and_filter
-from src.save_results.data_saving_utils import generate_and_save_plots
+from src.processing.pre_process import (
+    df_cleaner,
+    df_generator,
+    df_group_and_filter,
+    enrich_with_geo_data,
+)
+from src.save_results.data_saving_utils import (
+    generate_and_save_plots,
+    initialise_dir_structure,
+)
 from src.service_utils import project_root
 
 
@@ -17,6 +25,7 @@ def main():
 
     data_frames_gen = df_generator(str(project_root() / "data/hotels.zip"))
     df_full = df_group_and_filter([df_cleaner(df) for df in data_frames_gen])
+    enrich_with_geo_data(df_full)
 
     centre_info = generate_centres_df(df_full)
 
@@ -36,7 +45,9 @@ def main():
 
     generate_and_save_plots(s_complete_weather_df, "D:/plots")
 
-    return s_complete_weather_df, top_df
+    initialise_dir_structure("D:/plots", df_full)
+
+    return top_df
 
 
 if __name__ == "__main__":
