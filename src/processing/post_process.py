@@ -3,8 +3,6 @@
 import pandas as pd
 
 from src.api_utils.geodata_api import calc_centre
-from src.processing.pre_process import df_cleaner, df_generator, df_group_and_filter
-from src.service_utils import project_root
 
 
 def generate_centres_df(cities_df: pd.DataFrame) -> pd.DataFrame:
@@ -29,9 +27,4 @@ def generate_centres_df(cities_df: pd.DataFrame) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    data_frames_gen = df_generator(str(project_root() / "data/hotels.zip"))
-    df_full = df_group_and_filter([df_cleaner(df) for df in data_frames_gen])
-
-    generate_centres_df(df_full)
-
-    print()
+    pass
