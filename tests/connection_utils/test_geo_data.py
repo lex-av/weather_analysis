@@ -2,7 +2,7 @@
 
 from unittest.mock import patch
 
-from src.connection_utils.geo_data import calc_centre, collect_geo_data
+from src.api_utils.geodata_api import calc_centre, collect_geo_data
 from src.processing.pre_process import df_cleaner, df_generator, df_group_and_filter
 
 

@@ -5,7 +5,7 @@ from zipfile import ZipFile
 
 import pandas as pd
 
-from src.connection_utils.geo_data import collect_geo_data
+from src.api_utils.geodata_api import collect_geo_data
 
 
 def df_generator(path: str) -> Iterator:

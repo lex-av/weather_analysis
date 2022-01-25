@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
 
-from src.connection_utils.weather_api import (
+from src.api_utils.weather_api import (
     get_centre_current_forecast_weather,
     get_centre_historical_weather,
 )

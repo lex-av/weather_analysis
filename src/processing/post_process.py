@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from src.connection_utils.geo_data import calc_centre
+from src.api_utils.geodata_api import calc_centre
 from src.processing.pre_process import df_cleaner, df_generator, df_group_and_filter
 from src.service_utils import project_root
 

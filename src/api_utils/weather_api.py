@@ -8,7 +8,7 @@ from typing import List
 import pandas as pd
 import requests
 
-from src.connection_utils.constants import WEATHER_API_KEY
+from src.constants import WEATHER_API_KEY
 
 
 def weather_api_worker(lat: float, lon: float) -> dict:
