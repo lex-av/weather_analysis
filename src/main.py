@@ -2,8 +2,8 @@
 import pandas as pd
 
 from src.connection_utils.weather_api import (
-    get_city_centre_current_forecast_weather,
-    get_city_centre_historical_weather,
+    get_centre_current_forecast_weather,
+    get_centre_historical_weather,
 )
 from src.processing.post_process import generate_centres_df
 from src.processing.pre_process import df_cleaner, df_generator, df_group_and_filter
@@ -24,8 +24,8 @@ def main():
     weather_dfs = []
 
     for lat, lon, city in zip(lats, lons, cities):
-        weather_dfs.append(get_city_centre_historical_weather(lat, lon, city))
-        weather_dfs.append(get_city_centre_current_forecast_weather(lat, lon, city))
+        weather_dfs.append(get_centre_historical_weather(lat, lon, city))
+        weather_dfs.append(get_centre_current_forecast_weather(lat, lon, city))
 
     complete_weather_df = pd.concat(weather_dfs, ignore_index=True)
     s_complete_weather_df = complete_weather_df.sort_values("Date")

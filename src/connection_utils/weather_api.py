@@ -49,27 +49,28 @@ def weather_api_historical_worker(lat: float, lon: float, utc_time: int) -> dict
     return json.loads(resp.text)
 
 
-def get_city_centre_current_forecast_weather(latitude: float, longitude: float, city_name: str) -> pd.DataFrame:
+def extract_weather_data(json_resp: dict, latitude: float, longitude: float, city_name: str) -> dict:
     """
-    Gathers weather information for given city coordinates from openweathermap.org API
-    and packs it into pandas DataFrame. Has low effect on API load - only one request per City
+    Reads api response, converted to dict and extracts needed for
+    future analysis data. Uses data from worker, that requests
+    data for current and forecast weather
 
-
-    :param latitude: city_centre latitude
-    :param longitude: city_centre longitude
-    :param city_name: marker for DataFrame
-    :return: pandas DataFrame of weather info for current city
+    :param json_resp: Response from external API, converted
+    into dict structure
+    :param latitude: Centre latitude used for request
+    :param longitude: Centre longitude used for request
+    :param city_name: city for this coordinates - marker for future DataFrame
+    :return: Dict of lists with data to load into pd.DataFrame
     """
 
-    weather_data = weather_api_worker(latitude, longitude)
-    daily_data = weather_data["daily"][:6]  # Need today's complete info and only 5-day forecast
-
+    # Need today's complete info (from forecast section) and only 5-day forecast
+    daily_data = json_resp["daily"][:6]
     dates = [datetime.datetime.fromtimestamp(day["dt"]).date() for day in daily_data]
     temp_values = [day["temp"]["day"] for day in daily_data]
     min_temp_values = [day["temp"]["min"] for day in daily_data]
     max_temp_values = [day["temp"]["max"] for day in daily_data]
 
-    center_weather_dict = {
+    center_data_dict = {
         "Date": dates,
         "City": [city_name for i in range(len(dates))],
         "Latitude": latitude,
@@ -79,13 +80,67 @@ def get_city_centre_current_forecast_weather(latitude: float, longitude: float, 
         "MaxTemp": max_temp_values,
     }
 
+    return center_data_dict
+
+
+def extract_hist_weather_data(json_resp: List[dict], latitude: float, longitude: float, city_name: str) -> dict:
+    """
+    Reads api response, converted to dict and extracts needed for
+    future analysis data. Uses data from historical worker, that
+    requests data for historical weather data
+
+    :param json_resp: Response from external API, converted
+    into dict structure
+    :param latitude: Centre latitude used for request
+    :param longitude: Centre longitude used for request
+    :param city_name: city for this coordinates - marker for future DataFrame
+    :return: Dict of lists with data to load into pd.DataFrame
+    """
+
+    date = [datetime.datetime.fromtimestamp(json_resp[i]["current"]["dt"]).date() for i in range(len(json_resp))]
+    # latitude = json_resp[0]["lat"]
+    # longitude = json_resp[0]["lon"]
+    current_temp_lst = [data["current"]["temp"] for data in json_resp]
+    hourly_data = [data["hourly"] for data in json_resp]
+
+    min_temp_values = [min([hour["temp"] for hour in hourly_data[i]]) for i in range(len(hourly_data))]
+    max_temp_values = [max([hour["temp"] for hour in hourly_data[i]]) for i in range(len(hourly_data))]
+
+    center_data_dict = {
+        "Date": date,
+        "City": city_name,
+        "Latitude": latitude,
+        "Longitude": longitude,
+        "DayTemp": current_temp_lst,
+        "MinTemp": min_temp_values,
+        "MaxTemp": max_temp_values,
+    }
+
+    return center_data_dict
+
+
+def get_centre_current_forecast_weather(latitude: float, longitude: float, city_name: str) -> pd.DataFrame:
+    """
+    Gathers weather information for given city coordinates from openweathermap.org API
+    and packs it into pandas DataFrame, using extract function. Has low effect on
+    API load - only one request per City
+
+    :param latitude: city_centre latitude
+    :param longitude: city_centre longitude
+    :param city_name: marker for DataFrame
+    :return: pandas DataFrame of weather info for current city
+    """
+
+    weather_data = weather_api_worker(latitude, longitude)
+    center_weather_dict = extract_weather_data(weather_data, latitude, longitude, city_name)
+
     return pd.DataFrame.from_dict(center_weather_dict)
 
 
-def get_city_centre_historical_weather(latitude: float, longitude: float, city_name: str) -> pd.DataFrame:
+def get_centre_historical_weather(latitude: float, longitude: float, city_name: str) -> pd.DataFrame:
     """
     Gets weather historical data for five days from API in parallel and
-    packs it into pandas DataFrame.
+    packs it into pandas DataFrame, using extract function.
     Has high effect on API load - 5 request per City
 
     :param latitude: city_centre latitude
@@ -114,70 +169,10 @@ def get_city_centre_historical_weather(latitude: float, longitude: float, city_n
             ),
         )
 
-    # City marker for later DataFrame generating
-    for data in weather_data:
-        data["City"] = city_name
-
-    date = [datetime.datetime.fromtimestamp(weather_data[i]["current"]["dt"]).date() for i in range(len(weather_data))]
-    city = weather_data[0]["City"]
-    latitude = weather_data[0]["lat"]
-    longitude = weather_data[0]["lon"]
-    current_temp_lst = [data["current"]["temp"] for data in weather_data]
-    hourly_data = [data["hourly"] for data in weather_data]
-
-    min_temp_values = [min([hour["temp"] for hour in hourly_data[i]]) for i in range(len(hourly_data))]
-    max_temp_values = [max([hour["temp"] for hour in hourly_data[i]]) for i in range(len(hourly_data))]
-
-    center_weather_dict = {
-        "Date": date,
-        "City": city,
-        "Latitude": latitude,
-        "Longitude": longitude,
-        "DayTemp": current_temp_lst,
-        "MinTemp": min_temp_values,
-        "MaxTemp": max_temp_values,
-    }
+    center_weather_dict = extract_hist_weather_data(weather_data, latitude, longitude, city_name)
 
     return pd.DataFrame.from_dict(center_weather_dict)
 
 
-def build_historical_weather_data_df(w_data: List) -> pd.DataFrame:
-    """
-    Collects useful data from API-responses and puts it
-    into pd DataFrame, able to concatenate
-
-    :param w_data: Weather historical data list of dict
-    :return: pandas DataFrame
-    """
-
-    date = [datetime.datetime.fromtimestamp(w_data[i]["current"]["dt"]).date() for i in range(len(w_data))]
-    city = w_data[0]["City"]
-    latitude = w_data[0]["lat"]
-    longitude = w_data[0]["lon"]
-    current_temp_lst = [data["current"]["temp"] for data in w_data]
-    hourly_data = [data["hourly"] for data in w_data]
-
-    min_temp_values = [min([hour["temp"] for hour in hourly_data[i]]) for i in range(len(hourly_data))]
-    max_temp_values = [max([hour["temp"] for hour in hourly_data[i]]) for i in range(len(hourly_data))]
-
-    center_weather_dict = {
-        "Date": date,
-        "City": city,
-        "Latitude": latitude,
-        "Longitude": longitude,
-        "DayTemp": current_temp_lst,
-        "MinTemp": min_temp_values,
-        "MaxTemp": max_temp_values,
-    }
-
-    df = pd.DataFrame.from_dict(center_weather_dict)
-
-    return df
-
-
 if __name__ == "__main__":
-
-    wth_data = get_city_centre_current_forecast_weather(30.489772, -99.771335, "Londo")
-
-    print()
     pass
