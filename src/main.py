@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import pandas as pd
 
 from src.api_utils.weather_api import (
@@ -7,6 +8,7 @@ from src.api_utils.weather_api import (
 )
 from src.processing.post_process import generate_centres_df
 from src.processing.pre_process import df_cleaner, df_generator, df_group_and_filter
+from src.save_results.plotters import plot_max, plot_min
 from src.service_utils import project_root
 
 
@@ -30,14 +32,11 @@ def main():
     complete_weather_df = pd.concat(weather_dfs, ignore_index=True)
     s_complete_weather_df = complete_weather_df.sort_values("Date")
 
+    plot_min(s_complete_weather_df, "Paris")
+    plot_max(s_complete_weather_df, "Paris")
+
     return s_complete_weather_df
 
 
 if __name__ == "__main__":
     main()
-
-"""plt.plot(s_complete_weather_df[s_complete_weather_df["City"] == "Paris"]["Date"],
-s_complete_weather_df[s_complete_weather_df["City"] == "Paris"]["DayTemp"])"""
-
-"""plt.plot(s_complete_weather_df[s_complete_weather_df["City"] == "London"]["Date"],
-s_complete_weather_df[s_complete_weather_df["City"] == "London"]["DayTemp"])"""
