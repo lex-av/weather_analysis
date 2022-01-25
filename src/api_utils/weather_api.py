@@ -98,8 +98,6 @@ def extract_hist_weather_data(json_resp: List[dict], latitude: float, longitude:
     """
 
     date = [datetime.datetime.fromtimestamp(json_resp[i]["current"]["dt"]).date() for i in range(len(json_resp))]
-    # latitude = json_resp[0]["lat"]
-    # longitude = json_resp[0]["lon"]
     current_temp_lst = [data["current"]["temp"] for data in json_resp]
     hourly_data = [data["hourly"] for data in json_resp]
 
