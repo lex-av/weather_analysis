@@ -8,7 +8,7 @@ import pandas as pd
 from src.save_results.plotters import plot_max, plot_min
 
 
-def generate_and_save_plots(centres_df: pd.DataFrame, base_dir: Union[str, pathlib.Path]):
+def generate_and_save_plots(centres_df: pd.DataFrame, hotels_df: pd.DataFrame, base_dir: Union[str, pathlib.Path]):
     """
     Generates plots of day minimum and day maximum temperature for every
     city centre in given DataFrame. Given directory to dump plots
@@ -16,13 +16,15 @@ def generate_and_save_plots(centres_df: pd.DataFrame, base_dir: Union[str, pathl
 
     :param centres_df: pandas DataFrame, containing weather
     information about city centres
+    :param hotels_df: pandas DataFrame, containing weather information about
+    cities, countries and hotels
     :param base_dir: path to previously created directory where created
     plots will be stored
     """
 
     for city in centres_df["City"].unique():
-        plot_min(centres_df, city, base_dir)
-        plot_max(centres_df, city, base_dir)
+        plot_min(centres_df, hotels_df, city, base_dir)
+        plot_max(centres_df, hotels_df, city, base_dir)
 
 
 def initialise_dir_structure(basedir: Union[str, pathlib.Path], hotels_df: pd.DataFrame):

@@ -43,12 +43,12 @@ def main():
 
     top_df = generate_top_df(s_complete_weather_df)
 
-    generate_and_save_plots(s_complete_weather_df, "D:/plots")
-
     initialise_dir_structure("D:/plots", df_full)
+    generate_and_save_plots(s_complete_weather_df, df_full, "D:/plots")
 
     return top_df
 
 
 if __name__ == "__main__":
+    # [f"{i:02}" for i in range(115)]
     main()
