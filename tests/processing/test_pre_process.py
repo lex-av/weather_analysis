@@ -48,7 +48,7 @@ def test_enrich_with_geo_data(get_path):
     data_frames = df_generator(get_path + "/tests/test_data/hotels_test_data.zip")
     df_full = df_group_and_filter([df_cleaner(df) for df in data_frames])
 
-    with patch("src.connection_utils.geo_data.get_address_worker", fake_get_address_worker):
+    with patch("src.api_utils.geodata_api.get_address_worker", fake_get_address_worker):
         enrich_with_geo_data(df_full)
 
     assert df_full["Address"].values[0] == "Totally real address of real Country"
