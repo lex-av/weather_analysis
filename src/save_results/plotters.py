@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+import pathlib
+from typing import Union
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def plot_min(centres_df: pd.DataFrame, city: str):
+def plot_min(centres_df: pd.DataFrame, city: str, base_dir: Union[str, pathlib.Path]):
     """
     Plots information about day minimum temperature of
     given city
@@ -14,6 +16,7 @@ def plot_min(centres_df: pd.DataFrame, city: str):
     :param city: City to plot
     """
 
+    city_name = city.lower()
     dates_vector = centres_df[centres_df["City"] == city]["Date"]
     temps_vector = centres_df[centres_df["City"] == city]["MinTemp"]
     delta = (max(temps_vector) - min(temps_vector)) // 2  # for plots prettifying
@@ -26,11 +29,11 @@ def plot_min(centres_df: pd.DataFrame, city: str):
     plt.ylim(top=max(temps_vector) + delta)
     plt.ylim(bottom=min(temps_vector) - delta)
     plt.xticks(rotation=90)
-    plt.savefig("data_1.png")
+    plt.savefig(str(base_dir) + f"/{city_name}_min_temperatures.png")
     plt.close()
 
 
-def plot_max(centres_df: pd.DataFrame, city: str):
+def plot_max(centres_df: pd.DataFrame, city: str, base_dir: Union[str, pathlib.Path]):
     """
     Plots information about day maximum temperature of
     given city
@@ -40,6 +43,7 @@ def plot_max(centres_df: pd.DataFrame, city: str):
     :param city: City to plot
     """
 
+    city_name = city.lower()
     dates_vector = centres_df[centres_df["City"] == city]["Date"]
     temps_vector = centres_df[centres_df["City"] == city]["MaxTemp"]
     delta = (max(temps_vector) - min(temps_vector)) // 2  # for plots prettifying
@@ -52,7 +56,7 @@ def plot_max(centres_df: pd.DataFrame, city: str):
     plt.ylim(top=max(temps_vector) + delta)
     plt.ylim(bottom=min(temps_vector) - delta)
     plt.xticks(rotation=90)
-    plt.savefig("data_2.png")
+    plt.savefig(str(base_dir) + f"/{city_name}_max_temperatures.png")
     plt.close()
 
 

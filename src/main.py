@@ -8,7 +8,7 @@ from src.api_utils.weather_api import (
 )
 from src.processing.post_process import generate_centres_df, generate_top_df
 from src.processing.pre_process import df_cleaner, df_generator, df_group_and_filter
-from src.save_results.plotters import plot_max, plot_min
+from src.save_results.data_saving_utils import generate_and_save_plots
 from src.service_utils import project_root
 
 
@@ -32,10 +32,9 @@ def main():
     complete_weather_df = pd.concat(weather_dfs, ignore_index=True)
     s_complete_weather_df = complete_weather_df.sort_values("Date")
 
-    plot_min(s_complete_weather_df, "Paris")
-    plot_max(s_complete_weather_df, "Paris")
-
     top_df = generate_top_df(s_complete_weather_df)
+
+    generate_and_save_plots(s_complete_weather_df, "D:/plots")
 
     return s_complete_weather_df, top_df
 
