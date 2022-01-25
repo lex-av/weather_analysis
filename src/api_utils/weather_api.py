@@ -2,28 +2,29 @@
 
 import datetime
 import json
+import os
 from multiprocessing.pool import ThreadPool
 from typing import List
 
 import pandas as pd
 import requests
+from dotenv import load_dotenv
 
-from src.constants import WEATHER_API_KEY
+load_dotenv()
+KEY = os.getenv("WEATHER_API_KEY")
 
 
 def weather_api_worker(lat: float, lon: float) -> dict:
     """
     Gets weather data for given coordinate from openweathermap.org
-    API key is constants.py required
+    API key in .env required
 
     :param lat: Latitude
     :param lon: Longitude
     :return: Dictionary of json data
     """
 
-    resp = requests.get(
-        f"https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&appid={WEATHER_API_KEY}&units=metric"
-    )
+    resp = requests.get(f"https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&appid={KEY}&units=metric")
 
     return json.loads(resp.text)
 
@@ -31,7 +32,7 @@ def weather_api_worker(lat: float, lon: float) -> dict:
 def weather_api_historical_worker(lat: float, lon: float, utc_time: int) -> dict:
     """
     Gets historical weather data for given coordinate and datetime from openweathermap.org
-    API key is constants.py required
+    API key in .env required
 
     :param lat: Latitude
     :param lon: Longitude
@@ -42,7 +43,7 @@ def weather_api_historical_worker(lat: float, lon: float, utc_time: int) -> dict
     resp = requests.get(
         (
             f"https://api.openweathermap.org/data/2.5/onecall/timemachine"
-            f"?lat={lat}&lon={lon}&dt={utc_time}&appid={WEATHER_API_KEY}&units=metric"
+            f"?lat={lat}&lon={lon}&dt={utc_time}&appid={KEY}&units=metric"
         )
     )
 
