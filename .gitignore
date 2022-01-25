@@ -139,4 +139,4 @@ dmypy.json
 src/cache/
 
 # Keys
-src/connection_utils/constants.py
+src/constants.py
