@@ -79,7 +79,9 @@ def slice_and_save_city_hotels_data(basedir: Union[str, pathlib.Path], hotels_df
     file_num = 1
     for start, stop in slice_lst:
         file_name = f"{city.lower()}_hotels_{file_num:03}.csv"
-        hotels_df.iloc[start:stop].to_csv(f"{str(basedir)}/{country}/{city}/hotels/{file_name}", index=False)
+        hotels_df.iloc[start:stop].to_csv(
+            f"{str(basedir)}/{country}/{city}/hotels/{file_name}", index=False, encoding="utf-8"
+        )
         file_num += 1
 
 
@@ -117,7 +119,7 @@ def save_general_statistics(basedir: Union[str, pathlib.Path], statistics_df: pd
         -City with max delta of max and min temp
     """
 
-    statistics_df.to_csv(f"{str(basedir)}/general_statistics.csv")
+    statistics_df.to_csv(f"{str(basedir)}/general_statistics.csv", encoding="utf-8")
 
 
 if __name__ == "__main__":

@@ -64,9 +64,10 @@ def get_address_worker_v2(coordinate: str) -> Union[str, None]:
             sleep(randint(5 * 100, 15 * 100) / 1000)
             continue
 
-        info = json.loads(resp.text)
+        # Avoid broken symbols
+        info = json.loads(resp.text.encode().decode("utf-8"))
 
-        if info["data"][0] == [] and retried < retries_count:
+        if ("data" not in info or info["data"][0] == []) and retried < retries_count:
             retried += 1
             sleep(randint(5 * 100, 15 * 100) / 1000)
             continue
@@ -144,4 +145,5 @@ def calc_centre(coordinates: pd.DataFrame) -> List[float]:
 
 
 if __name__ == "__main__":
+    get_address_worker_v2("48.8550298,2.3332104")
     pass

@@ -74,3 +74,4 @@ def main(data_path, output_path, threads_count):
 
 if __name__ == "__main__":
     main()
+    # "data/hotels.zip", "D:/data", threads_count=10
