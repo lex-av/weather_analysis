@@ -83,18 +83,21 @@ def slice_and_save_city_hotels_data(basedir: Union[str, pathlib.Path], hotels_df
         file_num += 1
 
 
-def save_centre_data(basedir: Union[str, pathlib.Path], centres_df: pd.DataFrame, country: str, city: str):
+def save_centre_data(basedir: Union[str, pathlib.Path], centres_df: pd.DataFrame, hotels_df: pd.DataFrame, city: str):
     """
     Save centres information for given City from centres/weather DataFrame to csv
     files with max length of 100
 
     :param basedir: Directory to store all collected data
-    :param centres_df: DataFrame with info about cities, countries
-    and hotels
-    :param country: Counry code from hotels DataFrame. Example: US, FR
+    :param centres_df: DataFrame with info about cities centres weather
+     data
+    :param hotels_df: DataFrame with info about cities, countries
+     and hotels
     :param city: City from hotels_df (Capitalized)
     """
 
+    hotels_df = hotels_df[hotels_df["City"] == city]
+    country = hotels_df["Country"].unique()[0]
     centres_df[centres_df["City"] == city].to_csv(
         f"{str(basedir)}/{country}/{city}/center_weather_info.csv", index=False
     )
