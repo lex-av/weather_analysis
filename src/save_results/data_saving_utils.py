@@ -46,14 +46,13 @@ def initialise_dir_structure(basedir: Union[str, pathlib.Path], hotels_df: pd.Da
     for country, city_list in countries_and_cities.items():
         countries_and_cities_paths += [f"{str(basedir)}/{country}/{city}/plots" for city in city_list]
         countries_and_cities_paths += [f"{str(basedir)}/{country}/{city}/hotels" for city in city_list]
-        countries_and_cities_paths += [f"{str(basedir)}/{country}/{city}/centre_info" for city in city_list]
 
     for path_ in countries_and_cities_paths:
         path = pathlib.Path(path_)
         path.mkdir(parents=True, exist_ok=True)
 
 
-def slice_and_save_hotels_data(basedir: Union[str, pathlib.Path], hotels_df: pd.DataFrame, city: str):
+def slice_and_save_city_hotels_data(basedir: Union[str, pathlib.Path], hotels_df: pd.DataFrame, city: str):
     """
     Save hotels information for given City from hotels DataFrame to csv
     files with max length of 100
@@ -82,6 +81,23 @@ def slice_and_save_hotels_data(basedir: Union[str, pathlib.Path], hotels_df: pd.
         file_name = f"{city.lower()}_hotels_{file_num:03}.csv"
         hotels_df.iloc[start:stop].to_csv(f"{str(basedir)}/{country}/{city}/hotels/{file_name}", index=False)
         file_num += 1
+
+
+def save_centre_data(basedir: Union[str, pathlib.Path], centres_df: pd.DataFrame, country: str, city: str):
+    """
+    Save centres information for given City from centres/weather DataFrame to csv
+    files with max length of 100
+
+    :param basedir: Directory to store all collected data
+    :param centres_df: DataFrame with info about cities, countries
+    and hotels
+    :param country: Counry code from hotels DataFrame. Example: US, FR
+    :param city: City from hotels_df (Capitalized)
+    """
+
+    centres_df[centres_df["City"] == city].to_csv(
+        f"{str(basedir)}/{country}/{city}/center_weather_info.csv", index=False
+    )
 
 
 if __name__ == "__main__":
