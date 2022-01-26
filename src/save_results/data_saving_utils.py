@@ -70,8 +70,11 @@ def slice_and_save_hotels_data(basedir: Union[str, pathlib.Path], hotels_df: pd.
     df_len = len(hotels_df)
 
     # Generate list of df slices starts and stops
-    slice_lst = list(zip(list(range(0, df_len, 99)), range(99, df_len, 99)))
-    slice_lst = slice_lst + [(slice_lst[-1][1], df_len)]
+    if df_len > 99:
+        slice_lst = list(zip(list(range(0, df_len, 99)), range(99, df_len, 99)))
+        slice_lst = slice_lst + [(slice_lst[-1][1], df_len)]
+    else:
+        slice_lst = [(0, df_len)]
 
     # Generate files
     file_num = 1
