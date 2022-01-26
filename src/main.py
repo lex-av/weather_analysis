@@ -16,6 +16,7 @@ from src.processing.pre_process import (
 from src.save_results.data_saving_utils import (
     generate_and_save_plots,
     initialise_dir_structure,
+    slice_and_save_hotels_data,
 )
 from src.service_utils import project_root
 
@@ -28,6 +29,7 @@ def main():
     enrich_with_geo_data(df_full)
 
     centre_info = generate_centres_df(df_full)
+    slice_and_save_hotels_data("D:/plots", df_full, "Paris")
 
     lats = centre_info["Latitude"].values
     lons = centre_info["Latitude"].values

@@ -15,7 +15,7 @@ def plot_min(centres_df: pd.DataFrame, hotels_df: pd.DataFrame, city: str, base_
     :param hotels_df: pandas DataFrame, containing weather information about
     cities, countries and hotels
     information about city centres
-    :param city: City to plot
+    :param city: City from hotels_df to plot (Capitalized)
     """
 
     city_name = city
@@ -45,7 +45,7 @@ def plot_max(centres_df: pd.DataFrame, hotels_df: pd.DataFrame, city: str, base_
     information about city centres
     :param hotels_df: pandas DataFrame, containing weather information about
     cities, countries and hotels
-    :param city: City to plot (Capitalized)
+    :param city: City from hotels_df to plot (Capitalized)
     """
 
     city_name = city
