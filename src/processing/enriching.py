@@ -33,7 +33,7 @@ def enrich_with_weather_data(centre_df: pd.DataFrame):
     """
 
     lats = centre_df["Latitude"].values
-    lons = centre_df["Latitude"].values
+    lons = centre_df["Longitude"].values
     cities = centre_df["City"].values
     weather_dfs = []
 
