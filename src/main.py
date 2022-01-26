@@ -1,18 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import pandas as pd
-
-from src.api_utils.weather_api import (
-    get_centre_current_forecast_weather,
-    get_centre_historical_weather,
-)
+from src.processing.enriching import enrich_with_geo_data, enrich_with_weather_data
 from src.processing.post_process import generate_centres_df, generate_top_df
-from src.processing.pre_process import (
-    df_cleaner,
-    df_generator,
-    df_group_and_filter,
-    enrich_with_geo_data,
-)
+from src.processing.pre_process import df_cleaner, df_generator, df_group_and_filter
 from src.save_results.data_saving_utils import (
     generate_and_save_plots,
     initialise_dir_structure,
@@ -31,22 +21,12 @@ def main():
     centre_info = generate_centres_df(df_full)
     slice_and_save_hotels_data("D:/plots", df_full, "Paris")
 
-    lats = centre_info["Latitude"].values
-    lons = centre_info["Latitude"].values
-    cities = centre_info["City"].values
-    weather_dfs = []
+    complete_weather_df = enrich_with_weather_data(centre_info)
 
-    for lat, lon, city in zip(lats, lons, cities):
-        weather_dfs.append(get_centre_historical_weather(lat, lon, city))
-        weather_dfs.append(get_centre_current_forecast_weather(lat, lon, city))
-
-    complete_weather_df = pd.concat(weather_dfs, ignore_index=True)
-    s_complete_weather_df = complete_weather_df.sort_values("Date")
-
-    top_df = generate_top_df(s_complete_weather_df)
+    top_df = generate_top_df(complete_weather_df)
 
     initialise_dir_structure("D:/plots", df_full)
-    generate_and_save_plots(s_complete_weather_df, df_full, "D:/plots")
+    generate_and_save_plots(complete_weather_df, df_full, "D:/plots")
 
     return top_df
 

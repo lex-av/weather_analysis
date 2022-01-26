@@ -4,12 +4,8 @@ from unittest.mock import patch
 
 import pytest
 
-from src.processing.pre_process import (
-    df_cleaner,
-    df_generator,
-    df_group_and_filter,
-    enrich_with_geo_data,
-)
+from src.processing.enriching import enrich_with_geo_data
+from src.processing.pre_process import df_cleaner, df_generator, df_group_and_filter
 
 
 def fake_get_address_worker(coordinate):

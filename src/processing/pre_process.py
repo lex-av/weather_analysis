@@ -5,8 +5,6 @@ from zipfile import ZipFile
 
 import pandas as pd
 
-from src.api_utils.geodata_api import collect_geo_data
-
 
 def df_generator(path: str) -> Iterator:
     """
@@ -84,20 +82,6 @@ def df_group_and_filter(iterable: Union[List[pd.DataFrame], Iterator]) -> pd.Dat
         )
 
     return df_complete
-
-
-def enrich_with_geo_data(df: pd.DataFrame):
-    """
-    Enrich given DataFrame with geographical addresses requested from
-    external API of local cache using coordinates, presented in DataFrame
-    Modifies DataFrame inplace
-
-    :param df: pandas DataFrame with hotels data
-    """
-
-    df_lat_lon = df[["Latitude", "Longitude"]]
-    addr_lst = collect_geo_data(df_lat_lon)
-    df["Address"] = addr_lst
 
 
 if __name__ == "__main__":
