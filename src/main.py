@@ -7,6 +7,7 @@ from src.save_results.data_saving_utils import (
     generate_and_save_plots,
     initialise_dir_structure,
     save_centre_data,
+    save_general_statistics,
     slice_and_save_city_hotels_data,
 )
 from src.service_utils import project_root
@@ -29,6 +30,8 @@ def main():
     top_df = generate_top_df(complete_weather_df)
 
     generate_and_save_plots(complete_weather_df, df_full, "D:/plots")
+
+    save_general_statistics("D:/plots", top_df)
 
     return top_df
 

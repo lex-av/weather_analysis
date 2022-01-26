@@ -100,5 +100,22 @@ def save_centre_data(basedir: Union[str, pathlib.Path], centres_df: pd.DataFrame
     )
 
 
+def save_general_statistics(basedir: Union[str, pathlib.Path], statistics_df: pd.DataFrame):
+    """
+    Saves collected general information about max/min temp of all time
+    to csv file in base dir
+
+    :param basedir: Directory to store all collected data
+    :param statistics_df: DataFrame with calculated overall statistics about
+    given city centres. Collects following metrics:
+        -City with max temperature
+        -City with max delta of max temp
+        -City with min temperature
+        -City with max delta of max and min temp
+    """
+
+    statistics_df.to_csv(f"{str(basedir)}/general_statistics.csv")
+
+
 if __name__ == "__main__":
     pass
