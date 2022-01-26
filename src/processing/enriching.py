@@ -25,6 +25,8 @@ def enrich_with_geo_data(df: pd.DataFrame):
 
 def enrich_with_weather_data(centre_df: pd.DataFrame):
     """
+    Enrich given centres DataFrame with weather data from external
+    API. Returns new DataFrame, based on given
 
     :param centre_df: pandas DataFrame of city centres
     :return: Sorted centres DataFrame, enriched with weather data
