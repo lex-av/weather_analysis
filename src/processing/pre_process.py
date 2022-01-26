@@ -80,6 +80,7 @@ def df_group_and_filter(iterable: Union[List[pd.DataFrame], Iterator]) -> pd.Dat
         df_complete.drop(
             df_complete[(df_complete.Country == map_country) & (df_complete.City != map_city)].index, inplace=True
         )
+    df_complete = df_complete.reset_index(drop=True)
 
     return df_complete
 

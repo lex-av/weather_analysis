@@ -40,7 +40,7 @@ def enrich_with_weather_data(centre_df: pd.DataFrame):
         weather_dfs.append(get_centre_current_forecast_weather(lat, lon, city))
 
     complete_weather_df = pd.concat(weather_dfs, ignore_index=True)
-    complete_weather_df.sort_values("Date")
+    complete_weather_df = complete_weather_df.sort_values("Date", ignore_index=True)
 
     return complete_weather_df
 
