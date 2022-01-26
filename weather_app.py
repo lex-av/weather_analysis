@@ -22,7 +22,8 @@ logging.basicConfig(level=logging.INFO)
 @click.command()
 @click.option("--data_path", help="Path to zip archive with hotels data. Relative paths is allowed")
 @click.option("--output_path", help="Path to dir, where output data will be stored. Relative paths is allowed")
-def main(data_path, output_path):
+@click.option("--threads_count", default=10, help="Number threads to call geo-API with.")
+def main(data_path, output_path, threads_count):
     """
     Project main pipeline
 
@@ -45,7 +46,8 @@ def main(data_path, output_path):
 
     # Enriching from external APIs
     logging.info("Collecting geodata from API ...")
-    enrich_with_geo_data(df_hotels)
+
+    enrich_with_geo_data(df_hotels, threads_count)
     logging.info("Done!")
     logging.info("Collecting weather data from API ...")
     df_weather = enrich_with_weather_data(centre_info)

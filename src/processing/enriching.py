@@ -9,17 +9,18 @@ from src.api_utils.weather_api import (
 )
 
 
-def enrich_with_geo_data(df: pd.DataFrame):
+def enrich_with_geo_data(df: pd.DataFrame, threads_count: int = 10):
     """
     Enrich given DataFrame with geographical addresses requested from
     external API of local cache using coordinates, presented in DataFrame
     Modifies DataFrame inplace
 
     :param df: pandas DataFrame with hotels data
+    :param threads_count: count of threads to request API
     """
 
     df_lat_lon = df[["Latitude", "Longitude"]]
-    addr_lst = collect_geo_data(df_lat_lon)
+    addr_lst = collect_geo_data(df_lat_lon, threads_count=threads_count)
     df["Address"] = addr_lst
 
 

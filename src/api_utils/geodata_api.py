@@ -3,6 +3,7 @@
 import json
 import logging
 import os
+from multiprocessing.pool import ThreadPool
 from random import randint
 from time import sleep
 from typing import List, Union
@@ -77,7 +78,14 @@ def get_address_worker_v2(coordinate: str) -> Union[str, None]:
 
     # Build address from responded fields
     fields = info["data"][0]
-    address_parts = [fields["number"], fields["street"], fields["region"], fields["postal_code"], fields["country"]]
+    address_parts = [
+        fields["name"],
+        fields["number"],
+        fields["street"],
+        fields["region"],
+        fields["postal_code"],
+        fields["country"],
+    ]
     address_parts = [part for part in address_parts if part is not None]
 
     # Pick the best address definition and error-proof
@@ -91,22 +99,29 @@ def get_address_worker_v2(coordinate: str) -> Union[str, None]:
     return address
 
 
-def collect_geo_data(coordinates: pd.DataFrame, max_index: int = None) -> List:
+# Decorate geodata_worker "manually"
+# to use it decorated with multithreading
+get_address_worker_v2 = memory.cache(get_address_worker_v2)
+
+
+def collect_geo_data(coordinates: pd.DataFrame, threads_count: int = 10) -> List:
     """
     Uses get_address_worker to form list of geographical addresses by given
     DataFrame coordinates
 
     :param coordinates: pandas DataFrame
-    :param max_index: index to use slice of DataFrame as such as df[0:max_index]
+    :param threads_count: count of threads to request API
     :return: List of addresses for given DataFrame of coordinates
     """
 
-    address_list = []
-    if max_index is None:
-        max_index = len(coordinates)
+    coordinates_list = []
 
-    for coordinate in coordinates.values[0:max_index]:
-        address_list.append(get_address_worker(coordinate))
+    for coordinate in coordinates.values:
+        list(coordinate)
+        coordinates_list.append(",".join([str(coordinate[0]), str(coordinate[1])]))
+
+    with ThreadPool(threads_count) as tp:
+        address_list = tp.map(get_address_worker_v2, coordinates_list)
 
     return address_list
 
@@ -129,5 +144,4 @@ def calc_centre(coordinates: pd.DataFrame) -> List[float]:
 
 
 if __name__ == "__main__":
-    get_address_worker_v2("48.8503074,2.3450612")
-    get_address_worker("35.451305,-94.805814")
+    pass
